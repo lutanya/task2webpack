@@ -1,0 +1,58 @@
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const devMode = process.env.NODE_ENV !== "production";
+
+module.exports = {
+    mode: process.env.NODE_ENV,
+    entry: ['./src/index.js'],
+    output: {
+      filename: '[name].bundle.js',
+      chunkFilename: '[name].bundle.js',
+      path: path.resolve(__dirname, devMode? 'dev' : 'build'),
+    },
+    devtool: devMode ? 'cheap-module-source-map' : '',
+    devServer: {
+        contentBase: path.join(__dirname, devMode ? 'dev' : 'build'),
+        compress: true,
+        port: devMode ? 9000 : 8000,
+        watchContentBase: true,
+        progress: true,
+        open: true
+    },    
+
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                exclude: /node_modules/,
+                use: {
+                  loader: 'babel-loader'
+                }
+            },
+            {
+                test: /\.css$/,
+                use:[
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: true
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                use: ['file-loader']
+            },
+        ]  
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            title: 'MovieSearcher',
+            template: './src/index.html',
+            filename: 'index.html'
+        })
+    ]
+  
+}
